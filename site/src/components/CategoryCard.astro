@@ -1,0 +1,12 @@
+---
+import { withBase } from '../lib/site-path';
+import Icon from './Icon.astro';
+import type { categories } from '../lib/catalog';
+interface Props { category: typeof categories[number]; count: number; }
+const { category: c, count } = Astro.props;
+---
+<a class="category-card" href={withBase(`/knowledge/${c.id}/`)}>
+  <div class="card-top"><span class:list={['icon-tile',c.tone]}><Icon name={c.icon}/></span><span class="article-count">{count} 篇文章</span></div>
+  <h3>{c.name}</h3><p>{c.description}</p>
+  <div class="card-bottom"><span>{count ? '探索這個主題' : '內容準備中'}</span><Icon name="arrow" size={18}/></div>
+</a>

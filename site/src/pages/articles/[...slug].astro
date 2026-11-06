@@ -1,0 +1,32 @@
+---
+import { withBase } from '../../lib/site-path';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { adjacentArticles,relatedArticles } from '../../lib/learning';
+import { categories } from '../../lib/catalog';
+import { loadArticles, renderArticle } from '../../lib/content';
+export function getStaticPaths() { return loadArticles().map(article=>({params:{slug:article.slug},props:{article}})); }
+const { article }=Astro.props;
+const articles=loadArticles();
+const category=categories.find(c=>c.id===article.category)!;
+const rendered=await Promise.all(articles.map(a=>renderArticle(a,articles)));
+const {html,headings}=rendered[articles.findIndex(a=>a.id===article.id)];
+const graph=new Map(articles.map((a,i)=>[a.id,rendered[i].links]));
+const related=relatedArticles(article,articles,graph);
+const {previous,next}=adjacentArticles(article,articles);
+---
+<Base title={article.title} description={article.description}>
+<main id="main" class="reader-main" data-reading-article={article.id}>
+<div class="reading-progress" role="progressbar" aria-label="文章閱讀進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-reading-progress></span></div>
+<div class="reader-toolbar"><button class="reader-toggle" data-reader-toggle="left" aria-controls="category-sidebar" aria-expanded="true"><Icon name="menu" size={17}/> 知識導覽</button><a href={withBase("/knowledge/")}>返回知識庫</a><button class="reader-toggle" data-reader-toggle="right" aria-controls="toc-sidebar" aria-expanded="true">本頁目錄 <Icon name="book" size={17}/></button></div>
+<div class="reader-layout">
+<aside id="category-sidebar" class="reader-sidebar category-sidebar" aria-label="知識分類導覽"><div class="sidebar-title"><span>探索知識庫</span><button class="icon-button" data-close-reader="left" aria-label="收合知識導覽"><Icon name="close" size={16}/></button></div><nav>{categories.map(c=>{const list=articles.filter(a=>a.category===c.id);return <details open={c.id===article.category}><summary><Icon name={c.icon} size={17}/><span>{c.name}</span><small>{list.length}</small></summary>{list.length ? list.map(a=><a href={withBase(a.route)} aria-current={a.slug===article.slug?'page':undefined}>{a.title}</a>) : <span class="sidebar-empty">內容準備中</span>}</details>})}</nav><div class="sidebar-note">一次讀一點，<br/>讓想法慢慢成形。<span>✧</span></div></aside>
+<article class="article-shell"><nav class="breadcrumbs" aria-label="麵包屑"><a href={withBase("/")}>首頁</a><span>/</span><a href={withBase("/knowledge/")}>知識庫</a><span>/</span><a href={withBase(`/knowledge/${category.id}/`)}>{category.short}</a></nav><header class="article-header"><a class:list={['tag',category.tone]} href={withBase(`/knowledge/${category.id}/`)}>{category.name}</a><h1>{article.title}</h1><p class="article-description">{article.description}</p><div class="article-meta"><span><Icon name="clock" size={15}/> 更新於 {article.updated}</span><span>{article.sources.map(s=>s.id).join(' · ')}</span></div><div class="article-completion"><button class="completion-button" data-complete-article={article.id} aria-pressed="false">標記為已完成</button><span class="small-note">由你決定何時讀完，不會自動標記。</span></div><p class="storage-warning" data-storage-warning role="status" hidden></p></header><div class="prose" set:html={html}></div><section class="public-sources" id="article-sources"><span class="eyebrow">TRACEABLE KNOWLEDGE</span><h2>本文來源資訊</h2><p>保留來源編號與官方參考連結；本地原始資料及知識庫管理紀錄不在網站公開。</p><ul>{article.sources.map(s=><li><strong>{s.id}</strong><div>{s.url && /^https?:\/\//.test(s.url) ? <a href={s.url} target="_blank" rel="noopener noreferrer">{s.title} ↗</a> : <span>{s.title}</span>}<small>發布日期：{s.published ?? '未知'} · 查閱日期：{s.accessed ?? '未知'}</small></div></li>)}</ul>{article.license && <p class="small-note">本文授權：{article.license}。詳細署名及改編說明保留於文章參考來源章節。</p>}</section><section class="reading-finish"><div><h2>這一步，完成了嗎？</h2><p>讀過、試過，再依自己的步調做記號。</p></div><button class="completion-button" data-complete-article={article.id} aria-pressed="false">標記為已完成</button></section>
+<nav class="article-pagination" aria-label="文章前後導覽">{previous&&<a href={withBase(previous.route)}><small>← 上一篇</small><strong>{previous.title}</strong></a>}{next&&<a href={withBase(next.route)} class="next-article"><small>下一篇 →</small><strong>{next.title}</strong></a>}</nav>
+{related.length>0&&<section class="related-reading"><h2>接著，也許你想了解</h2><p class="small-note">從文章關聯與相近主題，繼續探索。</p><div class="related-grid">{related.map(a=><ArticleCard article={a}/>)}</div></section>}
+<a class="article-return text-link" href={withBase(`/knowledge/${category.id}/`)}>← 回到{category.short}</a></article>
+<aside id="toc-sidebar" class="reader-sidebar toc-sidebar" aria-label="本頁目錄"><div class="sidebar-title"><span>本頁目錄</span><button class="icon-button" data-close-reader="right" aria-label="收合本頁目錄"><Icon name="close" size={16}/></button></div><nav>{headings.map(h=><a href={`#${h.id}`} data-toc-link data-depth={h.depth}>{h.text}</a>)}<a href="#article-sources" data-toc-link>本文來源資訊</a></nav><a class="back-top" href="#main">回到頂端 ↑</a></aside>
+</div><button class="reader-scrim" data-reader-dismiss aria-label="關閉閱讀選單" hidden></button>
+</main>
+</Base>

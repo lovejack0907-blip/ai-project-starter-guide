@@ -1,0 +1,12 @@
+---
+import { withBase } from '../../lib/site-path';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { categories } from '../../lib/catalog';
+import { loadArticles } from '../../lib/content';
+export function getStaticPaths() { return categories.map(category=>({params:{category:category.id},props:{category}})); }
+const { category: c } = Astro.props;
+const articles=loadArticles().filter(a=>a.category===c.id);
+---
+<Base title={c.name}><main id="main" class="wrap page-main"><nav class="breadcrumbs" aria-label="麵包屑"><a href={withBase("/")}>首頁</a><span>/</span><a href={withBase("/knowledge/")}>知識庫</a><span>/</span><span>{c.short}</span></nav><div class="page-heading"><span class:list={['icon-tile large',c.tone]}><Icon name={c.icon} size={29}/></span><h1>{c.name}</h1><p>{c.description}</p><span class="library-stats">{articles.length} 篇文章</span></div>{articles.length ? <div class="reading-grid">{articles.map(a=><ArticleCard article={a}/>)}</div> : <div class="empty-state"><span class:list={['icon-tile large',c.tone]}><Icon name="book" size={32}/></span><h2>這個主題，正在慢慢成形</h2><p>目前還沒有正式文章。先逛逛其他主題，或從入門路線開始吧。</p><a class="button primary" href={withBase("/knowledge/")}>探索其他分類 <Icon name="arrow" size={18}/></a><a class="text-link" href={withBase("/learn/")}>看看學習路線</a></div>}</main></Base>

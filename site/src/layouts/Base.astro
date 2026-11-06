@@ -1,0 +1,31 @@
+---
+import { withBase } from '../lib/site-path';
+import '../styles/global.css';
+import '../styles/phase2.css';
+import Icon from '../components/Icon.astro';
+import { loadArticles } from '../lib/content';
+import { learningData } from '../lib/learning';
+interface Props { title?: string; description?: string; }
+const { title = 'AI 專案開發入門指南', description = '從第一個想法開始，認識 AI 開發、規劃專案，逐步做出自己的作品。' } = Astro.props;
+const pathname = Astro.url.pathname.slice(withBase('/').length - 1) || '/';
+const publicLearningData=JSON.stringify(learningData(loadArticles())).replace(/</g,'\\u003c');
+---
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="color-scheme" content="light dark"/><title>{title === 'AI 專案開發入門指南' ? title : `${title}｜AI 專案開發入門指南`}</title><link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")}/>
+<script is:inline>try{const t=localStorage.getItem('guide-theme')||'system';document.documentElement.dataset.theme=['system','light','dark'].includes(t)?t:'system'}catch{document.documentElement.dataset.theme='system'}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳至主要內容</a>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href={withBase("/")} aria-label="AI 專案開發入門指南首頁"><span class="brand-mark"><Icon name="spark" size={23}/></span><span>AI 專案開發<span class="brand-sub">入門指南</span></span></a>
+  <nav class="desktop-nav" aria-label="主要導覽"><a href={withBase("/")} aria-current={pathname === '/' ? 'page' : undefined}>首頁</a><a href={withBase("/learn/")} aria-current={pathname.startsWith('/learn') ? 'page' : undefined}>學習路線</a><a href={withBase("/knowledge/")} aria-current={pathname.startsWith('/knowledge') || pathname.startsWith('/articles') ? 'page' : undefined}>知識庫</a></nav>
+  <div class="header-actions"><button class="search-button" data-open-search aria-label="搜尋知識庫" aria-haspopup="dialog"><Icon name="search" size={18}/><span>搜尋知識</span><kbd class="search-shortcut">Ctrl K</kbd></button><button class="icon-button" data-theme-toggle aria-label="切換配色，目前跟隨系統" title="配色：跟隨系統"><Icon name="sun" size={21}/></button><button class="icon-button mobile-menu-button" data-menu-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="開啟導覽選單"><Icon name="menu"/></button></div>
+</div><nav id="mobile-nav" class="mobile-nav" aria-label="行動版導覽" hidden><a href={withBase("/")}>首頁</a><a href={withBase("/learn/")}>學習路線</a><a href={withBase("/knowledge/")}>知識庫</a></nav></header>
+<slot/>
+<footer class="site-footer"><div><a class="footer-brand" href={withBase("/")}>✦ AI 專案開發入門指南</a><p>不用一次學會所有事，先走出自己的第一步。</p></div><div class="footer-links"><a href={withBase("/learn/")}>開始學習</a><a href={withBase("/knowledge/")}>探索知識庫</a><span>陪你從想法走向作品</span></div></footer>
+<dialog id="search-dialog" aria-labelledby="search-title" class="search-dialog"><div class="search-dialog-top"><h2 id="search-title">你想了解什麼？</h2><button class="icon-button" data-close-search aria-label="關閉搜尋"><Icon name="close"/></button></div><div class="search-input-wrap"><Icon name="search" size={20}/><label for="wiki-search" class="sr-only">搜尋標題、分類或文章內容</label><input id="wiki-search" type="search" placeholder="試試「分支」、「AI 協作」或 README" autocomplete="off" maxlength="200" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-results" aria-describedby="search-help"/><kbd>Esc</kbd></div><p id="search-help" class="search-help">中文、英文都可以；多個關鍵字請用空格分開。</p><p data-search-status class="search-status" role="status">輸入關鍵字，找到下一個想讀的主題。</p><button data-search-retry class="text-link" hidden>重新載入搜尋</button><ul id="search-results" role="listbox" aria-label="搜尋結果"></ul><div class="search-footer"><span>↑ ↓ 選擇 · Enter 閱讀 · Esc 關閉</span><a href={withBase("/knowledge/")}>瀏覽所有分類 →</a></div></dialog>
+<script id="learning-data" type="application/json" is:inline set:html={publicLearningData}></script>
+<noscript><p class="noscript-note">文章與分類仍可閱讀；搜尋、配色與本機學習進度需要啟用 JavaScript。</p></noscript>
+<script src="../scripts/site.ts"></script>
+</body></html>

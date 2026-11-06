@@ -1,0 +1,7 @@
+---
+import { withBase } from '../lib/site-path';
+import Icon from './Icon.astro';
+interface Props { startHref?:string }
+const {startHref='/learn/'}=Astro.props;
+---
+<section class="continue-panel" data-continue-panel data-start-href={withBase(startHref)} aria-label="繼續閱讀"><span class="icon-tile violet"><Icon name="book"/></span><div><span class="eyebrow" data-continue-label>YOUR NEXT SMALL STEP</span><h2 data-continue-title>準備好，開始自己的第一步</h2><p data-continue-category>從入門路線開始，依照自己的步調閱讀。</p></div><a class="button secondary" href={withBase(startHref)} data-continue-link>開始學習 <Icon name="arrow" size={17}/></a></section>

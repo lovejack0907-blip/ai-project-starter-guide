@@ -1,0 +1,26 @@
+---
+import { withBase } from '../lib/site-path';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import ContinueReading from '../components/ContinueReading.astro';
+import { categories, stages } from '../lib/catalog';
+import { loadArticles } from '../lib/content';
+const articles = loadArticles();
+const preferred = ['ai-development-without-coding-background','first-website-learning-path','github-first-repository'];
+const recommended = preferred.flatMap(slug => articles.filter(a => a.slug.endsWith('/'+slug)));
+---
+<Base>
+<main id="main">
+<section class="hero wrap"><div class="hero-copy"><span class="eyebrow"><span class="status-dot"></span> 給每一個想開始的你</span><h1><span class="hero-title-line">有想法，</span><span class="hero-title-line">就從<span class="accent-word">這裡</span>開始<span class="title-dot">。</span></span></h1><p class="hero-description">不會寫程式也沒關係。從認識 AI 工具、整理想法到做出第一個作品，陪你一步一步開始。</p><div class="hero-actions"><a class="button primary" href={withBase("/learn/")}>開始學習 <Icon name="arrow" size={19}/></a><a class="button secondary" href={withBase("/knowledge/")}><Icon name="book" size={19}/> 探索知識庫</a></div><div class="hero-note"><span class="little-spark">✦</span> 從零開始・循序漸進・依照自己的步調</div></div>
+<div class="hero-art" aria-label="從一個想法，逐步成為作品的插畫" role="img"><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><span class="art-star star-one">✧</span><span class="art-star star-two">✦</span><span class="floating-label idea-label"><span>✦</span> 一個小小的想法</span><div class="browser-illustration"><div class="browser-top"><span></span><span></span><span></span><div>my-first-project</div></div><div class="browser-body"><div class="illus-sidebar"><i></i><i></i><i></i><i></i></div><div class="illus-content"><div class="illus-badge">HELLO, WORLD!</div><div class="illus-heading">我的第一個作品<span>從這裡誕生。</span></div><div class="illus-line"></div><div class="illus-line short"></div><div class="illus-boxes"><div><Icon name="code" size={25}/></div><div><Icon name="spark" size={25}/></div><div><Icon name="check" size={25}/></div></div><div class="illus-cta"></div></div></div></div><div class="floating-label done-label"><span class="done-check">✓</span><div>往前一小步<strong>離想法更近一點</strong></div></div><span class="art-caption">YOUR IDEAS, MADE POSSIBLE.</span></div>
+</section>
+<div class="intro-strip"><div class="wrap"><span><Icon name="spark" size={18}/> 不需要程式基礎</span><span><Icon name="map" size={18}/> 清楚的學習方向</span><span><Icon name="book" size={18}/> {articles.length} 篇入門知識，持續累積中</span></div></div>
+<div class="wrap home-continue"><ContinueReading/></div>
+<section class="section wrap" id="topics"><div class="section-heading"><div><span class="eyebrow">EXPLORE THE KNOWLEDGE</span><h2>好奇什麼，就從哪裡開始</h2><p>九個主題，陪你拼出 AI 開發的完整輪廓。</p></div><a class="text-link" href={withBase("/knowledge/")}>探索所有知識 <Icon name="arrow" size={18}/></a></div><div class="category-grid">{categories.map(c=><CategoryCard category={c} count={articles.filter(a=>a.category===c.id).length}/>)}</div></section>
+<section class="learning-section"><div class="wrap section"><div class="section-heading"><div><span class="eyebrow">ONE STEP AT A TIME</span><h2>不用趕路，一步一步就好</h2><p>從理解 AI，到分享你的作品，先看看前方的學習方向。</p></div><a class="text-link" href={withBase("/learn/")}>查看學習路線 <Icon name="arrow" size={18}/></a></div><ol class="stage-preview">{stages.map((s,i)=><li><a href={withBase(`/learn/#stage-${i+1}`)}><span class:list={['step-number',i===0 && 'first']}>0{i+1}</span><h3>{s.title}</h3><p>{s.description}</p></a></li>)}</ol><p class="route-note">自由選擇閱讀順序，手動記錄已完成的文章。尚未收錄的階段會標示內容準備中。</p></div></section>
+<section class="section wrap"><div class="section-heading"><div><span class="eyebrow">A GOOD PLACE TO START</span><h2>第一步，從這幾篇開始</h2><p>挑一篇有興趣的，慢慢讀、試著做。</p></div><span class="small-note">給初學者的推薦閱讀</span></div><div class="reading-grid">{recommended.map((a,i)=><ArticleCard article={a} number={i+1}/>)}</div></section>
+<section class="closing wrap"><span class="closing-spark">✳</span><div><h2>你的第一個作品，值得一個開始。</h2><p>不需要準備好一切，帶著好奇心就可以出發。</p></div><a class="button primary" href={withBase("/learn/")}>找到我的起點 <Icon name="arrow" size={18}/></a></section>
+</main>
+</Base>

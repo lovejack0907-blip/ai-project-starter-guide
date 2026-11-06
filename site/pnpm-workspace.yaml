@@ -1,0 +1,5 @@
+allowBuilds:
+  esbuild: true
+  sharp: true
+overrides:
+  esbuild: npm:esbuild-wasm@0.25.12

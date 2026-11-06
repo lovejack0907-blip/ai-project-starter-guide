@@ -1,0 +1,16 @@
+---
+import { withBase } from '../lib/site-path';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ContinueReading from '../components/ContinueReading.astro';
+import { loadArticles } from '../lib/content';
+import { learningData,routeOrder } from '../lib/learning';
+const articles=loadArticles(), data=learningData(articles), order=routeOrder(data);
+const byId=new Map(articles.map(a=>[a.id,a]));
+const first=byId.get(order[0]);
+---
+<Base title="新手學習路線"><main id="main" class="wrap page-main learning-page"><div class="page-heading"><span class="eyebrow">YOUR LEARNING JOURNEY</span><h1>每一小步，都算數。</h1><p>五個階段，幫你看見從想法到作品的方向。<br/>可以自由跳著讀，不需要解鎖下一關。</p><span class="tag violet">屬於你的學習步調</span></div>
+<section class="learning-overview" aria-labelledby="progress-title"><div><span class="eyebrow">SMALL STEPS, REAL PROGRESS</span><h2 id="progress-title">你的學習進度 <strong data-overall-percent>0%</strong></h2><p data-overall-count>已完成 0 / {order.length} 篇已收錄文章</p></div><progress data-overall-progress max="100" value="0" aria-label="整體文章學習進度"></progress><p class="small-note">依實際納入路線的文章計算，不重複計數。{data.stages.filter(s=>s.articleIds.length).length} / 5 個階段已有文章；完成全部已收錄文章，也不代表尚待補充的階段已完成。</p>{first&&<a class="button primary" data-next-learning href={withBase(first.route)}>開始學習 <Icon name="arrow" size={17}/></a>}</section>
+<p class="storage-warning" data-storage-warning role="status" hidden></p><p class="local-data-note">進度只保存在這個瀏覽器，不需要帳號；清除網站資料或更換裝置後不會自動保留。</p>
+<ContinueReading startHref={first?.route??'/knowledge/'}/>
+<ol class="learning-steps">{data.stages.map((s,i)=><li id={s.id} data-learning-stage={s.id}><span class="step-number">0{i+1}</span><div class="stage-content"><div class="stage-heading"><div><span class="eyebrow">STEP 0{i+1}</span><h2>{s.title}</h2></div><span class="stage-status" data-stage-status>{s.articleIds.length?'尚未完成':'內容準備中'}</span></div><p>{s.description}</p>{s.articleIds.length ? <><div class="stage-progress-line"><span data-stage-count>0 / {s.articleIds.length} 篇已完成</span><span data-stage-percent>0%</span></div><progress data-stage-progress max="100" value="0" aria-label={`${s.title}文章完成進度`}></progress><ul class="stage-articles">{s.articleIds.map(id=>{const a=byId.get(id)!;return <li><a href={withBase(a.route)}>{a.title}<Icon name="arrow" size={17}/></a><button class="completion-button" data-complete-article={a.id} aria-pressed="false" aria-label={`標記為已完成：${a.title}`}>標記為已完成</button></li>})}</ul></> : <div class="route-pending"><span class="tag mint">內容準備中</span><p>還沒有適合這個階段的文章。你可以繼續閱讀其他階段，不會影響操作。</p><a href={withBase(`/knowledge/${s.category}/`)}>查看分類狀態 →</a></div>}{s.note&&<p class="small-note stage-note">{s.note}</p>}</div></li>)}</ol></main></Base>

@@ -1,0 +1,26 @@
+# Build outputs and local dependencies
+node_modules/
+dist/
+.astro/
+# Local vault, materials and working records
+/.obsidian/
+/raw/
+/work/
+/plans/
+/outputs/
+/AGENTS.md
+/WORKFLOWS.md
+/import-guide.md
+/index.md
+/log.md
+/sources.md
+# Credentials and machine-specific files
+.env
+.env.*
+.envrc
+.npmrc
+*.pem
+*.key
+*.pfx
+*.p12
+*.log

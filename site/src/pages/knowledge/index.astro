@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import CategoryCard from '../../components/CategoryCard.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { categories } from '../../lib/catalog';
+import { loadArticles } from '../../lib/content';
+const articles = loadArticles();
+---
+<Base title="探索知識庫"><main id="main" class="wrap page-main"><div class="page-heading"><span class="eyebrow">THE KNOWLEDGE LIBRARY</span><h1>把好奇，變成你的下一步。</h1><p>從觀念到實作，依照自己的步調探索。</p><span class="library-stats">9 個知識分類 <span>／</span> {articles.length} 篇正式文章</span></div><div class="category-grid">{categories.map(c=><CategoryCard category={c} count={articles.filter(a=>a.category===c.id).length}/>)}</div><section class="section"><div class="section-heading"><div><h2>所有文章</h2><p>內容直接來自知識庫，跟著每一次整理持續成長。</p></div></div><div class="reading-grid">{articles.map(a=><ArticleCard article={a}/>)}</div></section></main></Base>

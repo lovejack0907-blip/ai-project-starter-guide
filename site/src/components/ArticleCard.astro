@@ -1,0 +1,14 @@
+---
+import { withBase } from '../lib/site-path';
+import type { Article } from '../lib/content';
+import { categories } from '../lib/catalog';
+import Icon from './Icon.astro';
+interface Props { article: Article; number?: number; }
+const { article: a, number } = Astro.props;
+const c = categories.find(c => c.id === a.category)!;
+---
+<a class="reading-card" href={withBase(a.route)}>
+  <div class="reading-meta"><span class:list={['tag', c.tone]}>{c.short}</span>{number && <span class="reading-number">0{number}</span>}</div>
+  <h3>{a.title}</h3><p>{a.description}</p>
+  <div class="card-bottom"><span>閱讀文章 <span class="completion-badge" data-completion-badge={a.id} hidden>✓ 已完成</span></span><Icon name="arrow" size={18}/></div>
+</a>

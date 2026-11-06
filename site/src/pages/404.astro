@@ -1,0 +1,5 @@
+---
+import { withBase } from '../lib/site-path';
+import Base from '../layouts/Base.astro';
+---
+<Base title="找不到這一頁"><main id="main" class="wrap page-main empty-state"><span class="eyebrow">404 · TAKE ANOTHER PATH</span><h1>這條小路，暫時沒有內容</h1><p>連結可能已變更，回到知識庫找找下一個主題吧。</p><a class="button primary" href={withBase("/knowledge/")}>回到知識庫 →</a></main></Base>

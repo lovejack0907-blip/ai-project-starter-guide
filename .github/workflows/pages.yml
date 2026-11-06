@@ -1,0 +1,55 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/configure-pages@v5
+        id: pages
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - name: Install locked dependencies
+        working-directory: site
+        run: pnpm install --frozen-lockfile
+      - name: Check, test, build, and validate paths
+        working-directory: site
+        env:
+          PAGES_SITE: ${{ steps.pages.outputs.origin }}
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: pnpm verify
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
