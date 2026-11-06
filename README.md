@@ -25,8 +25,8 @@ pnpm dev
 
 ## GitHub Pages
 
-- Repository：發布後填入實際儲存庫網址。
-- 公開網站：首次成功部署後填入 GitHub Pages 提供的實際網址。
+- Repository：[GitHub 原始碼](https://github.com/lovejack0907-blip/ai-project-starter-guide)。
+- 公開網站：[AI 專案開發入門指南](https://lovejack0907-blip.github.io/ai-project-starter-guide/)。
 - 儲存庫 Pages 的發布來源使用 **GitHub Actions**。`main` 上的變更會觸發部署流程，也可在 Actions 手動執行。
 - 工作流程從 Pages 取得網站 origin 與 base path，驗證後只部署 `site/dist/`。
 
