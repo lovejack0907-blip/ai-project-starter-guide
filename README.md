@@ -11,6 +11,16 @@
 
 網站使用 Astro 靜態輸出、TypeScript、Markdown 與 CSS。文章的公開版本位於 `wiki/`，網站建置時由 Markdown 產生文章頁與搜尋索引。靜態網站無須後端、API Key 或服務端環境密鑰。
 
+## 依照 AGENTS.md 開發
+
+[AGENTS.md 公開版](AGENTS.md) 摘整自開發期間實際使用的完整規則。公開 Git 歷史始於網站發布，以下對照可用來查核規則如何落實於目前的程式。
+
+| 規則 | 可查核的實作 |
+| --- | --- |
+| Wiki Markdown 是正式文章來源 | [內容讀取程式](site/src/lib/content.ts) 讀取 Wiki Markdown，[文章頁](site/src/pages/articles/%5B...slug%5D.astro) 與[搜尋索引](site/src/pages/search-index.json.ts) 使用同一批文章。 |
+| 學習路線只使用存在的文章，並保持文章識別穩定 | [學習路線](site/src/lib/learning.ts) 依文章 ID 排列並過濾不存在的項目，[文章 ID](site/src/lib/identity.ts) 維護穩定對照。 |
+| 通過品質檢查才部署 | [驗證指令](site/package.json) 依序執行型別檢查、測試、建置與[產物連結檢查](site/scripts/check-build.ts)。[Pages 工作流程](.github/workflows/pages.yml) 在驗證後才上傳靜態產物。 |
+
 ## 本機啟動
 
 使用 Node.js 24 和 pnpm 11.25.0。在專案根目錄執行：
